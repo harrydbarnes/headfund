@@ -366,7 +366,7 @@
                         alert('Link copied to clipboard!');
                     } catch (err) {
                         console.error('Failed to copy: ', err);
-                        alert(`Share this link: ${window.location.href}`);
+                        console.log('Failed to copy, please share this link:', window.location.href);
                     }
                 }
             });
