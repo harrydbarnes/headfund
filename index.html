@@ -363,7 +363,7 @@
                     // Fallback for browsers that don't support navigator.share
                     try {
                         await navigator.clipboard.writeText(window.location.href);
-                        alert('Link copied to clipboard!');
+                        console.log('Link copied to clipboard!');
                     } catch (err) {
                         console.error('Failed to copy: ', err);
                         console.log('Failed to copy, please share this link:', window.location.href);
