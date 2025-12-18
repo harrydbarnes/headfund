@@ -400,8 +400,11 @@
                     if (!result) return;
 
                     const timestamps = result.timestamp;
-                    const quotes = result.indicators.quote[0].close;
-
+                    const quotes = result.indicators.quote?.[0]?.close;
+                    if (!quotes) {
+                        console.warn('No quote data for ' + inv.ticker);
+                        return;
+                    }
                     // Find index for closest date on or after Dec 20, 2024
                     let startIndex = -1;
                     // We look for the first timestamp >= TARGET_DATE_TS
