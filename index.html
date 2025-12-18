@@ -406,19 +406,7 @@
                         return;
                     }
                     // Find index for closest date on or after Dec 20, 2024
-                    let startIndex = -1;
-                    // We look for the first timestamp >= TARGET_DATE_TS
-                    for (let i = 0; i < timestamps.length; i++) {
-                        if (timestamps[i] >= TARGET_DATE_TS) {
-                            startIndex = i;
-                            break;
-                        }
-                    }
-
-                    // Fallback: if data starts after target date, use first available
-                    if (startIndex === -1 && timestamps.length > 0 && timestamps[0] > TARGET_DATE_TS) {
-                        startIndex = 0;
-                    }
+                    const startIndex = timestamps.findIndex(ts => ts >= TARGET_DATE_TS);
 
                     if (startIndex === -1) {
                         console.warn(`No data found for ${inv.ticker} after Dec 20 2024`);
