@@ -189,7 +189,7 @@
 </div>
 </div>
 <div class="text-right">
-<p class="text-2xl font-bold text-green-400">£7,329</p>
+<p id="val-vanguard" class="text-2xl font-bold text-green-400">£7,329</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -217,7 +217,7 @@
 </div>
 </div>
 <div class="text-right">
-<p class="text-2xl font-bold text-primary">£14,850+</p>
+<p id="val-nvidia" class="text-2xl font-bold text-primary">£14,850+</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -244,7 +244,7 @@
 </div>
 </div>
 <div class="text-right">
-<p class="text-2xl font-bold text-blue-400">£5,620</p>
+<p id="val-ftse" class="text-2xl font-bold text-blue-400">£5,620</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -273,7 +273,7 @@
 </div>
 </div>
 <div class="text-right">
-<p class="text-2xl font-bold text-purple-400">£7,850</p>
+<p id="val-sp500" class="text-2xl font-bold text-purple-400">£7,850</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -302,7 +302,7 @@
 </div>
 </div>
 <div class="text-right">
-<p class="text-2xl font-bold text-orange-400">£9,200</p>
+<p id="val-amazon" class="text-2xl font-bold text-orange-400">£9,200</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -372,6 +372,95 @@
                 }
             });
         }
+
+        // --- Investment Update Logic ---
+        const BUDGET = 4500;
+        const TARGET_DATE_TS = new Date('2024-12-20T00:00:00Z').getTime() / 1000;
+        const investments = [
+            { id: 'val-vanguard', ticker: 'VWRL.L' },
+            { id: 'val-nvidia', ticker: 'NVDA' },
+            { id: 'val-ftse', ticker: '%5EFTSE' },
+            { id: 'val-sp500', ticker: '%5EGSPC' },
+            { id: 'val-amazon', ticker: 'AMZN' }
+        ];
+
+        const fetchInvestmentData = async () => {
+            const now = new Date().getTime() / 1000;
+
+            const promises = investments.map(async (inv) => {
+                try {
+                    // Using corsproxy.io to bypass CORS
+                    const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=2y`;
+
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Network response was not ok');
+
+                    const data = await response.json();
+                    const result = data.chart.result?.[0];
+                    if (!result) return;
+
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote[0].close;
+
+                    // Find index for closest date on or after Dec 20, 2024
+                    let startIndex = -1;
+                    // We look for the first timestamp >= TARGET_DATE_TS
+                    for (let i = 0; i < timestamps.length; i++) {
+                        if (timestamps[i] >= TARGET_DATE_TS) {
+                            startIndex = i;
+                            break;
+                        }
+                    }
+
+                    // Fallback: if data starts after target date, use first available
+                    if (startIndex === -1 && timestamps.length > 0 && timestamps[0] > TARGET_DATE_TS) {
+                        startIndex = 0;
+                    }
+
+                    if (startIndex === -1) {
+                        console.warn(`No data found for ${inv.ticker} after Dec 20 2024`);
+                        return;
+                    }
+
+                    const startPrice = quotes[startIndex];
+                    // Get latest valid price
+                    let currentPrice = null;
+                    for(let i = quotes.length - 1; i >= 0; i--) {
+                        if (quotes[i] !== null && quotes[i] !== undefined) {
+                            currentPrice = quotes[i];
+                            break;
+                        }
+                    }
+
+                    if (!startPrice || !currentPrice) return;
+
+                    const growthRatio = currentPrice / startPrice;
+
+                    // Calculate years difference
+                    // If start date is very close to now (e.g. < 7 days), use 1 year minimal to avoid extreme projection
+                    let yearsDiff = (now - timestamps[startIndex]) / (365 * 24 * 3600);
+                    if (yearsDiff < 0.02) yearsDiff = 1; // Minimum ~1 week logic safety
+
+                    // 5-Year Projection: Budget * (Growth ^ (5 / YearsDiff))
+                    // If YearsDiff is ~1, then it's Budget * Growth^5
+                    const projectedValue = BUDGET * Math.pow(growthRatio, 5 / yearsDiff);
+
+                    const el = document.getElementById(inv.id);
+                    if (el) {
+                        el.innerText = '£' + Math.floor(projectedValue).toLocaleString();
+                        el.title = `Based on growth from ${new Date(timestamps[startIndex] * 1000).toLocaleDateString()}`;
+                    }
+
+                } catch (e) {
+                    console.error(`Failed to update ${inv.ticker}:`, e);
+                }
+            });
+
+            await Promise.all(promises);
+        };
+
+        // Run the fetch
+        fetchInvestmentData();
     });
 </script>
 </body></html>
