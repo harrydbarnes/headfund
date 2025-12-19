@@ -405,7 +405,7 @@
 
         // --- Investment Update Logic ---
         const BUDGET = 4500;
-        const TARGET_DATE_TS = new Date('2024-12-20T00:00:00Z').getTime() / 1000;
+        const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
         const investments = [
             { id: 'val-vanguard', currId: 'curr-val-vanguard', ticker: 'VWRL.L' },
             { id: 'val-nvidia', currId: 'curr-val-nvidia', ticker: 'NVDA' },
@@ -436,14 +436,9 @@
                         return;
                     }
                     // Find index for closest date on or after Dec 20, 2024
-                    const startIndex = timestamps.findIndex(ts => ts >= TARGET_DATE_TS);
+                    // Find index for closest date on or after target date
+                    let startIndex = timestamps.findIndex(ts => ts >= TARGET_DATE_TS);
 
-                    if (startIndex === -1) {
-                        console.warn(`No data found for ${inv.ticker} after Dec 20 2024`);
-                        return;
-                    }
-
-                    const startPrice = quotes[startIndex];
                     // Get latest valid price
                     let currentPrice = null;
                     for(let i = quotes.length - 1; i >= 0; i--) {
@@ -453,7 +448,29 @@
                         }
                     }
 
-                    if (!startPrice || !currentPrice) return;
+                    if (!currentPrice) return;
+
+                    let startPrice;
+
+                    // If start date is in the future relative to data (startIndex === -1)
+                    // or if the data ends before the target date
+                    if (startIndex === -1) {
+                         // Check if the target date is beyond the last timestamp
+                         const lastTimestamp = timestamps[timestamps.length - 1];
+                         if (TARGET_DATE_TS > lastTimestamp) {
+                             // Future/Recent start date: Use current price as start price (0% growth)
+                             startPrice = currentPrice;
+                             // Set startIndex to last valid index for date display
+                             startIndex = timestamps.length - 1;
+                         } else {
+                             console.warn(`No data found for ${inv.ticker} around target date`);
+                             return;
+                         }
+                    } else {
+                        startPrice = quotes[startIndex];
+                    }
+
+                    if (!startPrice) return;
 
                     const growthRatio = currentPrice / startPrice;
 
