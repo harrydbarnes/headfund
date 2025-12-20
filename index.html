@@ -172,6 +172,48 @@
 <p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">Greggs</p>
 </div>
 </div>
+<!-- Item 7: Malta Holiday -->
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="flex items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900/20 shrink-0 h-16 w-16">
+<span class="material-symbols-outlined text-4xl text-teal-600 dark:text-teal-400">travel_explore</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">1</p>
+<span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£4.5k</span>
+</div>
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Holiday</p>
+<p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">Malta with Ryan</p>
+</div>
+</div>
+<!-- Item 8: Parking -->
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700/50 shrink-0 h-16 w-16">
+<span class="material-symbols-outlined text-4xl text-gray-600 dark:text-gray-400">local_parking</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">529</p>
+<span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£8.5/day</span>
+</div>
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Days</p>
+<p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">Day parking at West Horndon station</p>
+</div>
+</div>
+<!-- Item 9: Gym -->
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="flex items-center justify-center rounded-full bg-rose-50 dark:bg-rose-900/20 shrink-0 h-16 w-16">
+<span class="material-symbols-outlined text-4xl text-rose-600 dark:text-rose-400">fitness_center</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-start">
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">42</p>
+<span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£105/mo</span>
+</div>
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Months</p>
+<p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">Stockbrook Gym</p>
+</div>
+</div>
 </div>
 <!-- Content List: Smart Stuff -->
 <div id="smart-section" class="hidden px-4 flex flex-col gap-4 pb-24">
@@ -490,7 +532,7 @@
 
                     // 5-Year Projection: Budget * (Growth ^ (5 / YearsDiff))
                     // If YearsDiff is ~1, then it's Budget * Growth^5
-                    const projectedValue = BUDGET * Math.pow(growthRatio, 5 / yearsDiff);
+                    const projectedValue = BUDGET * Math.pow(growthRatio, 1 + 5 / yearsDiff);
 
                     const el = document.getElementById(inv.id);
                     if (el) {
