@@ -246,7 +246,7 @@
 </div>
 <!-- Fake Sparkline -->
 <div class="relative h-12 w-full">
-<svg class="w-full h-full stroke-yellow-400 fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
+<svg class="w-full h-full stroke-yellow-400 fill-none stroke-[3]" preserveAspectRatio="none" viewBox="0 0 100 25">
 <path d="M0,25 L100,5"></path>
 </svg>
 <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
@@ -314,7 +314,7 @@
 </div>
 <!-- Fake Sparkline -->
 <div class="relative h-12 w-full">
-<svg class="w-full h-full stroke-primary fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
+<svg class="w-full h-full stroke-primary fill-none stroke-[3]" preserveAspectRatio="none" viewBox="0 0 100 25">
 <path d="M0,25 C10,25 20,20 30,22 C40,24 50,15 60,15 C70,15 80,5 100,0"></path>
 </svg>
 <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-primary/10 to-transparent"></div>
@@ -347,7 +347,7 @@
 </div>
 <!-- Fake Sparkline -->
 <div class="relative h-12 w-full">
-<svg class="w-full h-full stroke-orange-400 fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
+<svg class="w-full h-full stroke-orange-400 fill-none stroke-[3]" preserveAspectRatio="none" viewBox="0 0 100 25">
 <path d="M0,20 C20,20 30,15 50,10 C70,5 80,10 100,0"></path>
 </svg>
 <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-orange-400/10 to-transparent"></div>
@@ -549,7 +549,8 @@
         }
 
         // --- Investment Update Logic ---
-        let BUDGET = 4500;
+        const budgetInput = document.getElementById('budget-input');
+        let BUDGET = parseFloat(budgetInput.value) || 4500;
         const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
         const investments = [
             { id: 'val-vanguard', currId: 'curr-val-vanguard', ticker: 'VWRL.L' },
@@ -564,9 +565,12 @@
         // Budget Editing
         const budgetWrapper = document.getElementById('budget-wrapper');
         const budgetDisplay = document.getElementById('budget-display');
-        const budgetInput = document.getElementById('budget-input');
+        // budgetInput already defined above
 
         if (budgetWrapper && budgetDisplay && budgetInput) {
+             // Sync display on load
+             budgetDisplay.innerText = '£' + BUDGET.toLocaleString();
+
              budgetWrapper.addEventListener('click', () => {
                  budgetInput.value = BUDGET;
                  budgetDisplay.classList.add('hidden');
@@ -747,6 +751,7 @@
         };
 
         // Run the fetch
+        updateFunStuff();
         fetchInvestmentData();
     });
 </script>
