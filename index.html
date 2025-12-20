@@ -583,14 +583,31 @@
                     // Calculate Current Value
                     const currentValue = BUDGET * growthRatio;
 
-                    // Calculate years difference
-                    // If start date is very close to now (e.g. < 7 days), use 1 year minimal to avoid extreme projection
-                    let yearsDiff = (now - timestamps[startIndex]) / (365.25 * 24 * 3600);
-                    if (yearsDiff < 0.02) yearsDiff = 1; // Minimum ~1 week logic safety
+                    // Calculate 5-Year Projection using Historical CAGR
+                    // Find the first valid price in the dataset to calculate historical growth
+                    let firstPrice = null;
+                    let firstTs = null;
+                    for (let i = 0; i < quotes.length; i++) {
+                        if (quotes[i] !== null && quotes[i] !== undefined) {
+                            firstPrice = quotes[i];
+                            firstTs = timestamps[i];
+                            break;
+                        }
+                    }
 
-                    // 5-Year Projection: Budget * (Growth ^ (5 / YearsDiff))
-                    // If YearsDiff is ~1, then it's Budget * Growth^5
-                    const projectedValue = BUDGET * Math.pow(growthRatio, 1 + 5 / yearsDiff);
+                    let projectedValue = currentValue;
+                    if (firstPrice && firstTs) {
+                        const lastTs = timestamps[timestamps.length - 1];
+                        // Calculate years of data available (usually ~5 years)
+                        const dataYears = (lastTs - firstTs) / (365.25 * 24 * 3600);
+
+                        if (dataYears > 0.5) { // Ensure we have enough data for a meaningful CAGR
+                            const historicalGrowth = currentPrice / firstPrice;
+                            const annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
+                            // Project 5 years from *now* (applied to currentValue)
+                            projectedValue = currentValue * Math.pow(annualGrowthRate, 5);
+                        }
+                    }
 
                     const el = document.getElementById(inv.id);
                     if (el) {
