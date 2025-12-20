@@ -585,15 +585,9 @@
 
                     // Calculate 5-Year Projection using Historical CAGR
                     // Find the first valid price in the dataset to calculate historical growth
-                    let firstPrice = null;
-                    let firstTs = null;
-                    for (let i = 0; i < quotes.length; i++) {
-                        if (quotes[i] !== null && quotes[i] !== undefined) {
-                            firstPrice = quotes[i];
-                            firstTs = timestamps[i];
-                            break;
-                        }
-                    }
+                    const firstValidIndex = quotes.findIndex(q => q != null);
+                    const firstPrice = firstValidIndex !== -1 ? quotes[firstValidIndex] : null;
+                    const firstTs = firstValidIndex !== -1 ? timestamps[firstValidIndex] : null;
 
                     let projectedValue = currentValue;
                     if (firstPrice && firstTs) {
