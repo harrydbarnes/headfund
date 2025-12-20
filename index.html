@@ -127,7 +127,7 @@
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£25/tkt</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Tickets</p>
-<p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">BFI IMAX Experience</p>
+<p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">BFI IMAX</p>
 </div>
 </div>
 <!-- Item 4 -->
@@ -189,8 +189,14 @@
 </div>
 </div>
 <div class="text-right">
-<p id="val-vanguard" class="text-2xl font-bold text-green-400">£7,329</p>
+<div class="mb-1">
+<p id="curr-val-vanguard" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-vanguard" class="text-xl font-bold text-green-400">£7,329</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
+</div>
 </div>
 </div>
 <!-- Fake Sparkline -->
@@ -217,8 +223,14 @@
 </div>
 </div>
 <div class="text-right">
-<p id="val-nvidia" class="text-2xl font-bold text-primary">£14,850+</p>
+<div class="mb-1">
+<p id="curr-val-nvidia" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-nvidia" class="text-xl font-bold text-primary">£14,850+</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
+</div>
 </div>
 </div>
 <!-- Fake Sparkline -->
@@ -244,8 +256,14 @@
 </div>
 </div>
 <div class="text-right">
-<p id="val-ftse" class="text-2xl font-bold text-blue-400">£5,620</p>
+<div class="mb-1">
+<p id="curr-val-ftse" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-ftse" class="text-xl font-bold text-blue-400">£5,620</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
+</div>
 </div>
 </div>
 <!-- Fake Sparkline -->
@@ -273,8 +291,14 @@
 </div>
 </div>
 <div class="text-right">
-<p id="val-sp500" class="text-2xl font-bold text-purple-400">£7,850</p>
+<div class="mb-1">
+<p id="curr-val-sp500" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-sp500" class="text-xl font-bold text-purple-400">£7,850</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
+</div>
 </div>
 </div>
 <!-- Fake Sparkline -->
@@ -297,13 +321,19 @@
 <span class="material-symbols-outlined text-orange-400">shopping_cart</span>
 </div>
 <div>
-<p class="text-sm text-gray-400">Amazon</p>
+<p class="text-sm text-gray-400">Amazon Stock</p>
 <p class="font-bold">Aggressive</p>
 </div>
 </div>
 <div class="text-right">
-<p id="val-amazon" class="text-2xl font-bold text-orange-400">£9,200</p>
+<div class="mb-1">
+<p id="curr-val-amazon" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-amazon" class="text-xl font-bold text-orange-400">£9,200</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
+</div>
 </div>
 </div>
 <!-- Fake Sparkline -->
@@ -375,14 +405,36 @@
 
         // --- Investment Update Logic ---
         const BUDGET = 4500;
-        const TARGET_DATE_TS = new Date('2024-12-20T00:00:00Z').getTime() / 1000;
+        const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
         const investments = [
-            { id: 'val-vanguard', ticker: 'VWRL.L' },
-            { id: 'val-nvidia', ticker: 'NVDA' },
-            { id: 'val-ftse', ticker: '%5EFTSE' },
-            { id: 'val-sp500', ticker: '%5EGSPC' },
-            { id: 'val-amazon', ticker: 'AMZN' }
+            { id: 'val-vanguard', currId: 'curr-val-vanguard', ticker: 'VWRL.L' },
+            { id: 'val-nvidia', currId: 'curr-val-nvidia', ticker: 'NVDA' },
+            { id: 'val-ftse', currId: 'curr-val-ftse', ticker: '%5EFTSE' },
+            { id: 'val-sp500', currId: 'curr-val-sp500', ticker: '%5EGSPC' },
+            { id: 'val-amazon', currId: 'curr-val-amazon', ticker: 'AMZN' }
         ];
+
+        const getStartPriceAndIndex = (timestamps, quotes, currentPrice, targetDateTs) => {
+            let startIndex = timestamps.findIndex(ts => ts >= targetDateTs);
+            let startPrice;
+
+            // If start date is in the future relative to data (startIndex === -1)
+            // or if the data ends before the target date
+            if (startIndex === -1) {
+                // If `startIndex` is -1, the target date is after all available data points.
+                // This can be because the array is empty or all timestamps are in the past.
+                // We'll use the most recent price as the starting price.
+                if (timestamps.length === 0) {
+                    return null;
+                }
+                startPrice = currentPrice;
+                startIndex = timestamps.length - 1;
+            } else {
+                startPrice = quotes[startIndex];
+            }
+
+            return { startPrice, startIndex };
+        };
 
         const fetchInvestmentData = async () => {
             const now = new Date().getTime() / 1000;
@@ -405,15 +457,7 @@
                         console.warn('No quote data for ' + inv.ticker);
                         return;
                     }
-                    // Find index for closest date on or after Dec 20, 2024
-                    const startIndex = timestamps.findIndex(ts => ts >= TARGET_DATE_TS);
 
-                    if (startIndex === -1) {
-                        console.warn(`No data found for ${inv.ticker} after Dec 20 2024`);
-                        return;
-                    }
-
-                    const startPrice = quotes[startIndex];
                     // Get latest valid price
                     let currentPrice = null;
                     for(let i = quotes.length - 1; i >= 0; i--) {
@@ -423,9 +467,21 @@
                         }
                     }
 
-                    if (!startPrice || !currentPrice) return;
+                    if (!currentPrice) return;
+
+                    const startData = getStartPriceAndIndex(timestamps, quotes, currentPrice, TARGET_DATE_TS);
+                    if (!startData) {
+                        console.warn(`No data found for ${inv.ticker} around target date`);
+                        return;
+                    }
+                    const { startPrice, startIndex } = startData;
+
+                    if (!startPrice) return;
 
                     const growthRatio = currentPrice / startPrice;
+
+                    // Calculate Current Value
+                    const currentValue = BUDGET * growthRatio;
 
                     // Calculate years difference
                     // If start date is very close to now (e.g. < 7 days), use 1 year minimal to avoid extreme projection
@@ -440,6 +496,16 @@
                     if (el) {
                         el.innerText = '£' + Math.floor(projectedValue).toLocaleString();
                         el.title = `Based on growth from ${new Date(timestamps[startIndex] * 1000).toLocaleDateString()}`;
+                    }
+
+                    const currEl = document.getElementById(inv.currId);
+                    if (currEl) {
+                        currEl.innerText = '£' + Math.floor(currentValue).toLocaleString();
+
+                        // Add color coding for profit/loss
+                        currEl.classList.remove('text-white');
+                        currEl.classList.toggle('text-green-400', currentValue >= BUDGET);
+                        currEl.classList.toggle('text-red-400', currentValue < BUDGET);
                     }
 
                 } catch (e) {
