@@ -217,6 +217,41 @@
 </div>
 <!-- Content List: Smart Stuff -->
 <div id="smart-section" class="hidden px-4 flex flex-col gap-4 pb-24">
+<p class="text-gray-500 dark:text-gray-400 mb-2 text-sm px-2">If you invested £4.5k on the 20th December, you could now have...</p>
+
+<!-- Cash ISA -->
+<div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-yellow-400">savings</span>
+</div>
+<div>
+<p class="text-sm text-gray-400">Cash ISA</p>
+<p class="font-bold">Safe</p>
+</div>
+</div>
+<div class="text-right">
+<div class="mb-1">
+<p id="curr-val-isa" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-isa" class="text-xl font-bold text-yellow-400">...</p>
+<p class="text-xs text-gray-500">In 5 Years</p>
+</div>
+</div>
+</div>
+<!-- Fake Sparkline -->
+<div class="relative h-12 w-full">
+<svg class="w-full h-full stroke-yellow-400 fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
+<path d="M0,25 L100,5"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
+</div>
+</div>
+
 <!-- Investment 1 -->
 <div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -447,7 +482,7 @@
 
         // --- Investment Update Logic ---
         const BUDGET = 4500;
-        const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
+        const TARGET_DATE_TS = new Date('2020-12-20T00:00:00Z').getTime() / 1000;
         const investments = [
             { id: 'val-vanguard', currId: 'curr-val-vanguard', ticker: 'VWRL.L' },
             { id: 'val-nvidia', currId: 'curr-val-nvidia', ticker: 'NVDA' },
@@ -481,10 +516,33 @@
         const fetchInvestmentData = async () => {
             const now = new Date().getTime() / 1000;
 
+            // Calculate Cash ISA
+            try {
+                const ISA_RATE = 0.042;
+                const yearsDiff = (now - TARGET_DATE_TS) / (365.25 * 24 * 3600);
+                // Compounded annually
+                // Value = Principal * (1 + r)^t
+                const isaCurrentValue = BUDGET * Math.pow(1 + ISA_RATE, yearsDiff);
+                // Prediction for 5 more years
+                const isaProjectedValue = isaCurrentValue * Math.pow(1 + ISA_RATE, 5);
+
+                const isaCurrEl = document.getElementById('curr-val-isa');
+                if (isaCurrEl) {
+                    isaCurrEl.innerText = '£' + Math.floor(isaCurrentValue).toLocaleString();
+                    isaCurrEl.classList.toggle('text-green-400', isaCurrentValue >= BUDGET);
+                }
+                const isaProjEl = document.getElementById('val-isa');
+                if (isaProjEl) {
+                    isaProjEl.innerText = '£' + Math.floor(isaProjectedValue).toLocaleString();
+                }
+            } catch (e) {
+                console.error("ISA Calc Error", e);
+            }
+
             const promises = investments.map(async (inv) => {
                 try {
                     // Using corsproxy.io to bypass CORS
-                    const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=2y`;
+                    const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=5y`;
 
                     const response = await fetch(url);
                     if (!response.ok) throw new Error('Network response was not ok');
