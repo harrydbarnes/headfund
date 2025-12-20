@@ -52,9 +52,10 @@
 <div class="flex items-center justify-center rounded-full bg-primary/20 shrink-0 h-10 w-10">
 <span class="material-symbols-outlined text-yellow-700">currency_pound</span>
 </div>
-<div class="flex flex-col flex-1">
+<div class="flex flex-col flex-1 cursor-pointer group" id="budget-wrapper">
 <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Budget</span>
-<h2 class="text-lg font-bold leading-none tracking-tight">£4,500</h2>
+<h2 id="budget-display" class="text-lg font-bold leading-none tracking-tight group-hover:text-primary transition-colors">£4,500</h2>
+<input id="budget-input" type="number" class="hidden w-24 bg-transparent text-lg font-bold leading-none tracking-tight border-none p-0 focus:ring-0 text-black dark:text-white" value="4500" />
 </div>
 <div class="h-2 w-24 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
 <div class="h-full bg-primary w-full"></div>
@@ -89,13 +90,13 @@
 <!-- Content List: Fun Stuff -->
 <div id="fun-section" class="px-4 flex flex-col gap-4 pb-32">
 <!-- Item 1 -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="6">
 <div class="flex items-center justify-center rounded-full bg-[#FFFBEB] dark:bg-yellow-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-yellow-600 dark:text-yellow-400">sports_bar</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors">750</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors js-fun-quantity">750</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£6/pint</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Pints</p>
@@ -103,27 +104,27 @@
 </div>
 </div>
 <!-- Item 2 -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="180">
 <div class="flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-red-500">theaters</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-red-500 transition-colors">25 Years</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-red-500 transition-colors js-fun-quantity">25</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£180/yr</span>
 </div>
-<p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Subscription</p>
+<p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Years Subscription</p>
 <p class="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">Cineworld Unlimited</p>
 </div>
 </div>
 <!-- Item 3 -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="25">
 <div class="flex items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-blue-500">movie_filter</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-blue-500 transition-colors">180</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-blue-500 transition-colors js-fun-quantity">180</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£25/tkt</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Tickets</p>
@@ -131,13 +132,13 @@
 </div>
 </div>
 <!-- Item 4 -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="200">
 <div class="flex items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-indigo-500">checkroom</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-indigo-500 transition-colors">22</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-indigo-500 transition-colors js-fun-quantity">22</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£200/ea</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Jackets</p>
@@ -145,13 +146,13 @@
 </div>
 </div>
 <!-- Item 5: PS5 -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="480">
 <div class="flex items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-blue-600 dark:text-blue-400">sports_esports</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">9</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors js-fun-quantity">9</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£480/ea</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Consoles</p>
@@ -159,13 +160,13 @@
 </div>
 </div>
 <!-- Item 6: Greggs -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="1.25">
 <div class="flex items-center justify-center rounded-full bg-orange-50 dark:bg-orange-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-orange-600 dark:text-orange-400">bakery_dining</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">3,600</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors js-fun-quantity">3,600</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£1.25/ea</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Sausage Rolls</p>
@@ -173,13 +174,13 @@
 </div>
 </div>
 <!-- Item 7: Malta Holiday -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="4500">
 <div class="flex items-center justify-center rounded-full bg-teal-50 dark:bg-teal-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-teal-600 dark:text-teal-400">travel_explore</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">1</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors js-fun-quantity">1</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£4.5k</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Holiday</p>
@@ -187,13 +188,13 @@
 </div>
 </div>
 <!-- Item 8: Parking -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="8.5">
 <div class="flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700/50 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-gray-600 dark:text-gray-400">local_parking</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors">529</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors js-fun-quantity">529</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£8.5/day</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Days</p>
@@ -201,13 +202,13 @@
 </div>
 </div>
 <!-- Item 9: Gym -->
-<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300">
+<div class="group flex items-center gap-4 bg-white dark:bg-[#1e1e1e] p-4 rounded-[2rem] shadow-sm border border-transparent hover:border-primary transition-all duration-300" data-cost="105">
 <div class="flex items-center justify-center rounded-full bg-rose-50 dark:bg-rose-900/20 shrink-0 h-16 w-16">
 <span class="material-symbols-outlined text-4xl text-rose-600 dark:text-rose-400">fitness_center</span>
 </div>
 <div class="flex flex-col flex-1 min-w-0">
 <div class="flex justify-between items-start">
-<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">42</p>
+<p class="text-2xl font-bold leading-none text-black dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors js-fun-quantity">42</p>
 <span class="text-xs font-bold bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-gray-500">£105/mo</span>
 </div>
 <p class="text-sm font-medium text-gray-400 uppercase tracking-wide mt-1">Months</p>
@@ -217,7 +218,7 @@
 </div>
 <!-- Content List: Smart Stuff -->
 <div id="smart-section" class="hidden px-4 flex flex-col gap-4 pb-24">
-<p class="text-gray-500 dark:text-gray-400 mb-2 text-sm px-2">If you invested £4.5k on the 20th December 2025, you could now have...</p>
+<p class="text-gray-500 dark:text-gray-400 mb-2 text-sm px-2">If you invested the budget on the 20th December 2025, you could now have...</p>
 
 <!-- Cash ISA -->
 <div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
@@ -271,7 +272,7 @@
 <p class="text-[10px] text-gray-400 uppercase">Today</p>
 </div>
 <div>
-<p id="val-vanguard" class="text-xl font-bold text-green-400">£7,329</p>
+<p id="val-vanguard" class="text-xl font-bold text-green-400">...</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -286,6 +287,7 @@
 <div class="w-1/6 bg-green-500 h-[90%] rounded-t"></div>
 </div>
 </div>
+
 <!-- Investment 2: Nvidia -->
 <div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
 <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -305,7 +307,7 @@
 <p class="text-[10px] text-gray-400 uppercase">Today</p>
 </div>
 <div>
-<p id="val-nvidia" class="text-xl font-bold text-primary">£14,850+</p>
+<p id="val-nvidia" class="text-xl font-bold text-primary">...</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -316,6 +318,72 @@
 <path d="M0,25 C10,25 20,20 30,22 C40,24 50,15 60,15 C70,15 80,5 100,0"></path>
 </svg>
 <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-primary/10 to-transparent"></div>
+</div>
+</div>
+
+<!-- Investment 5: Amazon (Moved here) -->
+<div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-400">shopping_cart</span>
+</div>
+<div>
+<p class="text-sm text-gray-400">Amazon Stock</p>
+<p class="font-bold">Aggressive</p>
+</div>
+</div>
+<div class="text-right">
+<div class="mb-1">
+<p id="curr-val-amazon" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-amazon" class="text-xl font-bold text-orange-400">...</p>
+<p class="text-xs text-gray-500">In 5 Years</p>
+</div>
+</div>
+</div>
+<!-- Fake Sparkline -->
+<div class="relative h-12 w-full">
+<svg class="w-full h-full stroke-orange-400 fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
+<path d="M0,20 C20,20 30,15 50,10 C70,5 80,10 100,0"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-orange-400/10 to-transparent"></div>
+</div>
+</div>
+
+<!-- Investment 6: WPP (Added) -->
+<div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+<div class="flex justify-between items-start mb-4 relative z-10">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-pink-400">campaign</span>
+</div>
+<div>
+<p class="text-sm text-gray-400">WPP</p>
+<p class="font-bold">For a laugh</p>
+</div>
+</div>
+<div class="text-right">
+<div class="mb-1">
+<p id="curr-val-wpp" class="text-base font-semibold text-white">...</p>
+<p class="text-[10px] text-gray-400 uppercase">Today</p>
+</div>
+<div>
+<p id="val-wpp" class="text-xl font-bold text-pink-400">...</p>
+<p class="text-xs text-gray-500">In 5 Years</p>
+</div>
+</div>
+</div>
+<!-- Fake Sparkline -->
+<div class="relative h-12 w-full">
+<svg class="w-full h-full stroke-pink-400 fill-none stroke-[3]" preserveAspectRatio="none" viewBox="0 0 100 25">
+<path d="M0,10 C30,15 50,5 70,20 100,10"></path>
+</svg>
+<div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-pink-400/10 to-transparent"></div>
 </div>
 </div>
 
@@ -338,7 +406,7 @@
 <p class="text-[10px] text-gray-400 uppercase">Today</p>
 </div>
 <div>
-<p id="val-ftse" class="text-xl font-bold text-blue-400">£5,620</p>
+<p id="val-ftse" class="text-xl font-bold text-blue-400">...</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -373,7 +441,7 @@
 <p class="text-[10px] text-gray-400 uppercase">Today</p>
 </div>
 <div>
-<p id="val-sp500" class="text-xl font-bold text-purple-400">£7,850</p>
+<p id="val-sp500" class="text-xl font-bold text-purple-400">...</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
@@ -389,36 +457,36 @@
 </div>
 </div>
 
-<!-- Investment 5: Amazon -->
+<!-- Investment 7: Pokemon Cards (Added) -->
 <div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
-<div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+<div class="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
 <div class="flex justify-between items-start mb-4 relative z-10">
 <div class="flex items-center gap-3">
 <div class="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center">
-<span class="material-symbols-outlined text-orange-400">shopping_cart</span>
+<span class="material-symbols-outlined text-yellow-400">style</span>
 </div>
 <div>
-<p class="text-sm text-gray-400">Amazon Stock</p>
-<p class="font-bold">Aggressive</p>
+<p class="text-sm text-gray-400">Pokémon Cards</p>
+<p class="font-bold">Gotta catch 'em all</p>
 </div>
 </div>
 <div class="text-right">
 <div class="mb-1">
-<p id="curr-val-amazon" class="text-base font-semibold text-white">...</p>
+<p id="curr-val-pokemon" class="text-base font-semibold text-white">...</p>
 <p class="text-[10px] text-gray-400 uppercase">Today</p>
 </div>
 <div>
-<p id="val-amazon" class="text-xl font-bold text-orange-400">£9,200</p>
+<p id="val-pokemon" class="text-xl font-bold text-yellow-400">...</p>
 <p class="text-xs text-gray-500">In 5 Years</p>
 </div>
 </div>
 </div>
 <!-- Fake Sparkline -->
 <div class="relative h-12 w-full">
-<svg class="w-full h-full stroke-orange-400 fill-none stroke-[3]" preserveaspectratio="none" viewbox="0 0 100 25">
-<path d="M0,20 C20,20 30,15 50,10 C70,5 80,10 100,0"></path>
+<svg class="w-full h-full stroke-yellow-400 fill-none stroke-[3]" preserveAspectRatio="none" viewBox="0 0 100 25">
+<path d="M0,25 C10,25 20,10 40,20 60,5 80,10 100,0"></path>
 </svg>
-<div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-orange-400/10 to-transparent"></div>
+<div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-yellow-400/10 to-transparent"></div>
 </div>
 </div>
 
@@ -429,7 +497,7 @@
 <span>Share the bald truth</span>
 <span class="material-symbols-outlined">arrow_forward</span>
 </button>
-<p class="text-center text-xs text-gray-400 mt-3 pb-2">Priorities, right? Share this with a bald friend.<br><span class="opacity-70">Satirical Intent, Factual Content</span></p>
+<p class="text-center text-xs text-gray-400 mt-3 pb-2">Priorities, right? Share this with a bald friend.<br><span class="opacity-70 text-sm font-semibold">Satirical Intent, Factual Content</span></p>
 </div>
 </div>
 <script>
@@ -481,15 +549,64 @@
         }
 
         // --- Investment Update Logic ---
-        const BUDGET = 4500;
+        let BUDGET = 4500;
         const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
         const investments = [
             { id: 'val-vanguard', currId: 'curr-val-vanguard', ticker: 'VWRL.L' },
             { id: 'val-nvidia', currId: 'curr-val-nvidia', ticker: 'NVDA' },
+            { id: 'val-amazon', currId: 'curr-val-amazon', ticker: 'AMZN' },
+            { id: 'val-wpp', currId: 'curr-val-wpp', ticker: 'WPP.L' },
             { id: 'val-ftse', currId: 'curr-val-ftse', ticker: '%5EFTSE' },
             { id: 'val-sp500', currId: 'curr-val-sp500', ticker: '%5EGSPC' },
-            { id: 'val-amazon', currId: 'curr-val-amazon', ticker: 'AMZN' }
+            { id: 'val-pokemon', currId: 'curr-val-pokemon', ticker: 'NTDOY' } // Using Nintendo as proxy
         ];
+
+        // Budget Editing
+        const budgetWrapper = document.getElementById('budget-wrapper');
+        const budgetDisplay = document.getElementById('budget-display');
+        const budgetInput = document.getElementById('budget-input');
+
+        if (budgetWrapper && budgetDisplay && budgetInput) {
+             budgetWrapper.addEventListener('click', () => {
+                 budgetInput.value = BUDGET;
+                 budgetDisplay.classList.add('hidden');
+                 budgetInput.classList.remove('hidden');
+                 budgetInput.focus();
+            });
+
+            const commitBudget = () => {
+                const val = parseFloat(budgetInput.value);
+                if (!isNaN(val) && val > 0) {
+                    BUDGET = val;
+                    budgetDisplay.innerText = '£' + BUDGET.toLocaleString();
+                    updateFunStuff();
+                    fetchInvestmentData();
+                }
+                budgetInput.classList.add('hidden');
+                budgetDisplay.classList.remove('hidden');
+            };
+
+            budgetInput.addEventListener('blur', commitBudget);
+            budgetInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    budgetInput.blur();
+                }
+            });
+
+            budgetInput.addEventListener('click', (e) => e.stopPropagation());
+        }
+
+        function updateFunStuff() {
+             const items = document.querySelectorAll('.group[data-cost]');
+             items.forEach(item => {
+                 const cost = parseFloat(item.getAttribute('data-cost'));
+                 const quantityEl = item.querySelector('.js-fun-quantity');
+                 if (cost && quantityEl) {
+                     let qty = Math.floor(BUDGET / cost);
+                     quantityEl.innerText = qty.toLocaleString();
+                 }
+             });
+        }
 
         const getStartPriceAndIndex = (timestamps, quotes, currentPrice, targetDateTs) => {
             let startIndex = timestamps.findIndex(ts => ts >= targetDateTs);
@@ -615,6 +732,8 @@
 
                         // Add color coding for profit/loss
                         currEl.classList.remove('text-white');
+                        currEl.classList.remove('text-green-400');
+                        currEl.classList.remove('text-red-400');
                         currEl.classList.toggle('text-green-400', currentValue >= BUDGET);
                         currEl.classList.toggle('text-red-400', currentValue < BUDGET);
                     }
