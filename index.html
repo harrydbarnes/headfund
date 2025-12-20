@@ -421,16 +421,14 @@
             // If start date is in the future relative to data (startIndex === -1)
             // or if the data ends before the target date
             if (startIndex === -1) {
-                // Check if the target date is beyond the last timestamp
-                const lastTimestamp = timestamps[timestamps.length - 1];
-                if (targetDateTs > lastTimestamp) {
-                    // Future/Recent start date: Use current price as start price (0% growth)
-                    startPrice = currentPrice;
-                    // Set startIndex to last valid index for date display
-                    startIndex = timestamps.length - 1;
-                } else {
+                // If `startIndex` is -1, the target date is after all available data points.
+                // This can be because the array is empty or all timestamps are in the past.
+                // We'll use the most recent price as the starting price.
+                if (timestamps.length === 0) {
                     return null;
                 }
+                startPrice = currentPrice;
+                startIndex = timestamps.length - 1;
             } else {
                 startPrice = quotes[startIndex];
             }
