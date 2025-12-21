@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const mainVal = formatCurrency(value);
         // Add profit/loss in brackets
-        element.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
+        element.innerHTML = `${mainVal} <span class="text-xs">(${sign}${diffFormatted})</span>`;
 
         element.classList.remove('text-white', 'text-green-400', 'text-red-400');
         element.classList.add(diffClass);
