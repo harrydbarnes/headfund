@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shareBtn.addEventListener('click', async () => {
             const shareData = {
                 title: 'Head Fund Manager',
-                text: 'discover the bald truth here',
+                text: 'discover the bald truth here:',
                 url: window.location.href
             };
 
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Investment Configuration ---
-    const TARGET_DATE_TS = new Date('2020-12-20T00:00:00Z').getTime() / 1000;
+    const TARGET_DATE_TS = new Date('2025-12-20T00:00:00Z').getTime() / 1000;
 
     // Explicit color mapping to avoid dynamic class issues
     const colorStyles = {
