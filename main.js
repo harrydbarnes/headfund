@@ -283,6 +283,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startPrice, startIndex };
     };
 
+    const updateValueWithDiff = (element, value, budget) => {
+        if (!element) return;
+
+        const diff = value - budget;
+        const diffFormatted = formatCurrency(Math.abs(diff));
+        const sign = diff >= 0 ? '+' : '-';
+        const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
+
+        const mainVal = formatCurrency(value);
+        // Add profit/loss in brackets
+        element.innerHTML = `${mainVal} <span class="text-xs">(${sign}${diffFormatted})</span>`;
+
+        element.classList.remove('text-white', 'text-green-400', 'text-red-400');
+        element.classList.add(diffClass);
+    };
+
     const fetchInvestmentData = async () => {
         const now = new Date().getTime() / 1000;
 
@@ -294,10 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const isaProjectedValue = isaCurrentValue * Math.pow(1 + ISA_RATE, 5);
 
             const isaCurrEl = document.getElementById('curr-val-isa');
-            if (isaCurrEl) {
-                isaCurrEl.innerText = formatCurrency(isaCurrentValue);
-                isaCurrEl.classList.toggle('text-green-400', isaCurrentValue >= BUDGET);
-            }
+            updateValueWithDiff(isaCurrEl, isaCurrentValue, BUDGET);
+
             const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
                 isaProjEl.innerText = formatCurrency(isaProjectedValue);
@@ -376,12 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const currEl = document.getElementById(inv.currId);
-                if (currEl) {
-                    currEl.innerText = formatCurrency(currentValue);
-                    currEl.classList.remove('text-white');
-                    currEl.classList.toggle('text-green-400', currentValue >= BUDGET);
-                    currEl.classList.toggle('text-red-400', currentValue < BUDGET);
-                }
+                updateValueWithDiff(currEl, currentValue, BUDGET);
 
             } catch (e) {
                 console.error(`Failed to update ${inv.ticker}:`, e);
