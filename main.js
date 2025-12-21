@@ -313,6 +313,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const isaProjEl = document.getElementById('val-isa');
 
     const fetchInvestmentData = async () => {
+        const getCachedElement = (id) => {
+            if (elementCache.has(id)) {
+                return elementCache.get(id);
+            }
+            const el = document.getElementById(id);
+            elementCache.set(id, el);
+            return el;
+        };
+
         const now = new Date().getTime() / 1000;
 
         // Calculate Cash ISA
@@ -333,8 +342,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const promises = investments.map(async (inv) => {
             // Optimization: Use cached DOM elements
-            const el = elementCache.get(inv.id) || document.getElementById(inv.id);
-            const currEl = elementCache.get(inv.currId) || document.getElementById(inv.currId);
+            const el = getCachedElement(inv.id);
+            const currEl = getCachedElement(inv.currId);
 
             try {
                 let growthRatio, fiveYearGrowthFactor, startTimestamp;
