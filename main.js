@@ -295,8 +295,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const isaCurrEl = document.getElementById('curr-val-isa');
             if (isaCurrEl) {
-                isaCurrEl.innerText = formatCurrency(isaCurrentValue);
-                isaCurrEl.classList.toggle('text-green-400', isaCurrentValue >= BUDGET);
+                const diff = isaCurrentValue - BUDGET;
+                const diffFormatted = formatCurrency(Math.abs(diff));
+                const sign = diff >= 0 ? '+' : '-';
+                const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
+
+                const mainVal = formatCurrency(isaCurrentValue);
+                isaCurrEl.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
+
+                isaCurrEl.classList.remove('text-white');
+                isaCurrEl.classList.remove('text-green-400', 'text-red-400');
+                if (diff >= 0) {
+                     isaCurrEl.classList.add('text-green-400');
+                } else {
+                     isaCurrEl.classList.add('text-red-400');
+                }
             }
             const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
@@ -377,10 +390,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const currEl = document.getElementById(inv.currId);
                 if (currEl) {
-                    currEl.innerText = formatCurrency(currentValue);
+                    const diff = currentValue - BUDGET;
+                    const diffFormatted = formatCurrency(Math.abs(diff));
+                    const sign = diff >= 0 ? '+' : '-';
+                    const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
+
+                    const mainVal = formatCurrency(currentValue);
+                    // Add profit/loss in brackets
+                    currEl.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
+
                     currEl.classList.remove('text-white');
-                    currEl.classList.toggle('text-green-400', currentValue >= BUDGET);
-                    currEl.classList.toggle('text-red-400', currentValue < BUDGET);
+                    currEl.classList.remove('text-green-400', 'text-red-400');
+                    if (diff >= 0) {
+                         currEl.classList.add('text-green-400');
+                    } else {
+                         currEl.classList.add('text-red-400');
+                    }
                 }
 
             } catch (e) {
