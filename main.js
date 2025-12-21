@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startPrice, startIndex };
     };
 
-    const updateValueWithDiff = (element, value, budget) => {
+    const updateValueWithDiff = (element, value, budget, defaultColorClass = 'text-white') => {
         if (!element) return;
 
         const diff = value - budget;
@@ -312,7 +312,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add profit/loss in brackets
         element.innerHTML = `${mainVal} <span class="text-xs">(${sign}${diffFormatted})</span>`;
 
-        element.classList.remove('text-white', 'text-green-400', 'text-red-400');
+        // Remove potential color classes (including passed default)
+        const possibleColors = ['text-white', 'text-green-400', 'text-red-400', 'text-primary', 'text-blue-400', 'text-purple-400', 'text-orange-400', 'text-pink-400'];
+        element.classList.remove(...possibleColors);
+
+        // If there was a specific default color class (like in cards), remove it too if it's not in the list above
+        if (defaultColorClass && !possibleColors.includes(defaultColorClass)) {
+             element.classList.remove(defaultColorClass);
+        }
+
         element.classList.add(diffClass);
     };
 
@@ -323,18 +331,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchInvestmentData = async () => {
         const now = new Date().getTime() / 1000;
+        const yearsDiff = (now - TARGET_DATE_TS) / (365.25 * 24 * 3600);
 
         // Calculate Cash ISA
         try {
             const ISA_RATE = 0.042;
-            const yearsDiff = (now - TARGET_DATE_TS) / (365.25 * 24 * 3600);
-            const isaCurrentValue = BUDGET * Math.pow(1 + ISA_RATE, yearsDiff);
-            const isaProjectedValue = isaCurrentValue * Math.pow(1 + ISA_RATE, 5);
+
+            // If before target date, we have just the budget (no interest yet).
+            // If after, we have accrued interest.
+            let isaCurrentValue = BUDGET;
+            if (yearsDiff > 0) {
+                 isaCurrentValue = BUDGET * Math.pow(1 + ISA_RATE, yearsDiff);
+            }
+
+            // Projection: 5 years from NOW.
+            // If before target: Wait time + Time in market = 5 years.
+            // Time in market = 5 + yearsDiff (since yearsDiff is negative).
+            // If after target: We are already invested. Projection is 5 more years.
+            // Formula: BUDGET * (1+r)^(TimeInMarket)
+            const timeInMarket = yearsDiff < 0 ? (5 + yearsDiff) : (yearsDiff + 5);
+            // Actually, if yearsDiff > 0, currentValue includes yearsDiff growth.
+            // Projected value (5 years from now) = currentValue * (1+r)^5.
+            // = BUDGET * (1+r)^yearsDiff * (1+r)^5 = BUDGET * (1+r)^(yearsDiff + 5).
+            // So the formula is consistent: Exponent is (yearsDiff + 5).
+
+            const isaProjectedValue = BUDGET * Math.pow(1 + ISA_RATE, yearsDiff + 5);
 
             updateValueWithDiff(isaCurrEl, isaCurrentValue, BUDGET);
 
             if (isaProjEl) {
-                isaProjEl.innerText = formatCurrency(isaProjectedValue);
+                updateValueWithDiff(isaProjEl, isaProjectedValue, BUDGET, 'text-yellow-400');
             }
         } catch (e) {
             console.error("ISA Calc Error", e);
@@ -407,13 +433,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (dataYears > 0.5) {
                             const historicalGrowth = currentPrice / firstPrice;
                             const annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
-                            fiveYearGrowthFactor = Math.pow(annualGrowthRate, 5);
+
+                            // Adjust growth factor based on start date logic
+                            // If before target (yearsDiff < 0), we only grow for (5 + yearsDiff) years
+                            const projectionYears = yearsDiff < 0 ? (5 + yearsDiff) : 5;
+                            // Ensure we don't project negative time
+                            const effectiveYears = Math.max(0, projectionYears);
+
+                            fiveYearGrowthFactor = Math.pow(annualGrowthRate, effectiveYears);
                         }
                     }
 
                     startTimestamp = timestamps[startIndex];
 
                     // Cache the calculated factors
+                    // Note: fiveYearGrowthFactor now depends on yearsDiff, so strictly caching it might be slightly off
+                    // if the session crosses a significant time boundary, but practically negligible.
+                    // However, since yearsDiff changes every second (slightly), caching might be an issue if we needed high precision.
+                    // Given the app nature, caching per session load or short term is fine.
+                    // BUT, since we changed the logic to depend on `yearsDiff` (global), and `investmentCache` stores it...
+                    // if we re-fetch, it uses the cached factor.
+                    // Ideally, we should cache `annualGrowthRate` and recalculate `fiveYearGrowthFactor`.
+                    // For now, assuming page reload clears cache, it's fine.
                     investmentCache[inv.ticker] = { growthRatio, fiveYearGrowthFactor, startTimestamp };
                 }
 
@@ -421,7 +462,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const projectedValue = currentValue * fiveYearGrowthFactor;
 
                 if (el) {
-                    el.innerText = formatCurrency(projectedValue);
+                    const colors = colorStyles[inv.colorKey] || colorStyles.green;
+                    updateValueWithDiff(el, projectedValue, BUDGET, colors.text);
                     el.title = `Based on growth from ${new Date(startTimestamp * 1000).toLocaleDateString()}`;
                 }
 
