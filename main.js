@@ -299,6 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.add(diffClass);
     };
 
+    const investmentCache = {};
+
     const fetchInvestmentData = async () => {
         const now = new Date().getTime() / 1000;
 
@@ -322,71 +324,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const promises = investments.map(async (inv) => {
             try {
-                // Note: Using a public proxy service (corsproxy.io) has security and reliability risks.
-                // A production app should fetch this data via a secure backend service.
-                const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=5y`;
+                let growthRatio, fiveYearGrowthFactor, startTimestamp;
 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (investmentCache[inv.ticker]) {
+                    ({ growthRatio, fiveYearGrowthFactor, startTimestamp } = investmentCache[inv.ticker]);
+                } else {
+                    // Note: Using a public proxy service (corsproxy.io) has security and reliability risks.
+                    // A production app should fetch this data via a secure backend service.
+                    const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=5y`;
 
-                const data = await response.json();
-                const result = data.chart.result?.[0];
-                if (!result) return;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Network response was not ok');
 
-                const timestamps = result.timestamp;
-                const quotes = result.indicators.quote?.[0]?.close;
-                if (!quotes) {
-                    console.warn('No quote data for ' + inv.ticker);
-                    return;
-                }
+                    const data = await response.json();
+                    const result = data.chart.result?.[0];
+                    if (!result) return;
 
-                // Refactored using findLast (or reverse find) pattern
-                // Since toReversed/findLast might not be in all environments, we use slice().reverse().find()
-                const currentPrice = quotes.slice().reverse().find(p => p !== null && p !== undefined);
-
-                if (!currentPrice) return;
-
-                const startData = getStartPriceAndIndex(timestamps, quotes, currentPrice, TARGET_DATE_TS);
-                if (!startData) {
-                    console.warn(`No data found for ${inv.ticker} around target date`);
-                    return;
-                }
-                const { startPrice, startIndex } = startData;
-
-                if (!startPrice) return;
-
-                const growthRatio = currentPrice / startPrice;
-                const currentValue = BUDGET * growthRatio;
-
-                let projectedValue = currentValue;
-
-                // Calculate 5-Year Projection using Historical CAGR
-                let firstPrice = null;
-                let firstTs = null;
-
-                // Refactored using findIndex for first valid
-                const firstValidIndex = quotes.findIndex(p => p !== null && p !== undefined);
-
-                if (firstValidIndex !== -1) {
-                    firstPrice = quotes[firstValidIndex];
-                    firstTs = timestamps[firstValidIndex];
-                }
-
-                if (firstPrice && firstTs) {
-                    const lastTs = timestamps[timestamps.length - 1];
-                    const dataYears = (lastTs - firstTs) / (365.25 * 24 * 3600);
-
-                    if (dataYears > 0.5) {
-                        const historicalGrowth = currentPrice / firstPrice;
-                        const annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
-                        projectedValue = currentValue * Math.pow(annualGrowthRate, 5);
+                    const timestamps = result.timestamp;
+                    const quotes = result.indicators.quote?.[0]?.close;
+                    if (!quotes) {
+                        console.warn('No quote data for ' + inv.ticker);
+                        return;
                     }
+
+                    // Refactored using findLast (or reverse find) pattern
+                    // Since toReversed/findLast might not be in all environments, we use slice().reverse().find()
+                    const currentPrice = quotes.slice().reverse().find(p => p !== null && p !== undefined);
+
+                    if (!currentPrice) return;
+
+                    const startData = getStartPriceAndIndex(timestamps, quotes, currentPrice, TARGET_DATE_TS);
+                    if (!startData) {
+                        console.warn(`No data found for ${inv.ticker} around target date`);
+                        return;
+                    }
+                    const { startPrice, startIndex } = startData;
+
+                    if (!startPrice) return;
+
+                    growthRatio = currentPrice / startPrice;
+
+                    // Calculate 5-Year Projection using Historical CAGR
+                    fiveYearGrowthFactor = 1;
+
+                    let firstPrice = null;
+                    let firstTs = null;
+
+                    // Refactored using findIndex for first valid
+                    const firstValidIndex = quotes.findIndex(p => p !== null && p !== undefined);
+
+                    if (firstValidIndex !== -1) {
+                        firstPrice = quotes[firstValidIndex];
+                        firstTs = timestamps[firstValidIndex];
+                    }
+
+                    if (firstPrice && firstTs) {
+                        const lastTs = timestamps[timestamps.length - 1];
+                        const dataYears = (lastTs - firstTs) / (365.25 * 24 * 3600);
+
+                        if (dataYears > 0.5) {
+                            const historicalGrowth = currentPrice / firstPrice;
+                            const annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
+                            fiveYearGrowthFactor = Math.pow(annualGrowthRate, 5);
+                        }
+                    }
+
+                    startTimestamp = timestamps[startIndex];
+
+                    // Cache the calculated factors
+                    investmentCache[inv.ticker] = { growthRatio, fiveYearGrowthFactor, startTimestamp };
                 }
+
+                const currentValue = BUDGET * growthRatio;
+                const projectedValue = currentValue * fiveYearGrowthFactor;
 
                 const el = document.getElementById(inv.id);
                 if (el) {
                     el.innerText = formatCurrency(projectedValue);
-                    el.title = `Based on growth from ${new Date(timestamps[startIndex] * 1000).toLocaleDateString()}`;
+                    el.title = `Based on growth from ${new Date(startTimestamp * 1000).toLocaleDateString()}`;
                 }
 
                 const currEl = document.getElementById(inv.currId);
