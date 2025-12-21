@@ -283,6 +283,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return { startPrice, startIndex };
     };
 
+    const updateValueWithDiff = (element, value, budget) => {
+        if (!element) return;
+
+        const diff = value - budget;
+        const diffFormatted = formatCurrency(Math.abs(diff));
+        const sign = diff >= 0 ? '+' : '-';
+        const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
+
+        const mainVal = formatCurrency(value);
+        // Add profit/loss in brackets
+        element.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
+
+        element.classList.remove('text-white', 'text-green-400', 'text-red-400');
+        if (diff >= 0) {
+            element.classList.add('text-green-400');
+        } else {
+            element.classList.add('text-red-400');
+        }
+    };
+
     const fetchInvestmentData = async () => {
         const now = new Date().getTime() / 1000;
 
@@ -294,18 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const isaProjectedValue = isaCurrentValue * Math.pow(1 + ISA_RATE, 5);
 
             const isaCurrEl = document.getElementById('curr-val-isa');
-            if (isaCurrEl) {
-                const diff = isaCurrentValue - BUDGET;
-                const diffFormatted = formatCurrency(Math.abs(diff));
-                const sign = diff >= 0 ? '+' : '-';
-                const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
+            updateValueWithDiff(isaCurrEl, isaCurrentValue, BUDGET);
 
-                const mainVal = formatCurrency(isaCurrentValue);
-                isaCurrEl.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
-
-                isaCurrEl.classList.remove('text-white', 'text-green-400', 'text-red-400');
-                isaCurrEl.classList.add(diffClass);
-            }
             const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
                 isaProjEl.innerText = formatCurrency(isaProjectedValue);
@@ -384,24 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 const currEl = document.getElementById(inv.currId);
-                if (currEl) {
-                    const diff = currentValue - BUDGET;
-                    const diffFormatted = formatCurrency(Math.abs(diff));
-                    const sign = diff >= 0 ? '+' : '-';
-                    const diffClass = diff >= 0 ? 'text-green-400' : 'text-red-400';
-
-                    const mainVal = formatCurrency(currentValue);
-                    // Add profit/loss in brackets
-                    currEl.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
-
-                    currEl.classList.remove('text-white');
-                    currEl.classList.remove('text-green-400', 'text-red-400');
-                    if (diff >= 0) {
-                         currEl.classList.add('text-green-400');
-                    } else {
-                         currEl.classList.add('text-red-400');
-                    }
-                }
+                updateValueWithDiff(currEl, currentValue, BUDGET);
 
             } catch (e) {
                 console.error(`Failed to update ${inv.ticker}:`, e);
