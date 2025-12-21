@@ -223,6 +223,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Dynamic Card Generation ---
     const investmentContainer = document.getElementById('investment-container');
+    const elementCache = new Map();
+
+    const getCachedElement = (id) => {
+        if (elementCache.has(id)) {
+            return elementCache.get(id);
+        }
+        const el = document.getElementById(id);
+        elementCache.set(id, el);
+        return el;
+    };
 
     if (investmentContainer) {
         // Optimization: Batch HTML insertion to reduce DOM thrashing
@@ -267,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Optimization: Cache DOM elements after insertion to avoid getElementById in loops
         investments.forEach(inv => {
-            inv.el = document.getElementById(inv.id);
-            inv.currEl = document.getElementById(inv.currId);
+            getCachedElement(inv.id);
+            getCachedElement(inv.currId);
         });
     }
 
@@ -331,6 +341,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const promises = investments.map(async (inv) => {
+            // Optimization: Use cached DOM elements
+            const el = getCachedElement(inv.id);
+            const currEl = getCachedElement(inv.currId);
+
             try {
                 let growthRatio, fiveYearGrowthFactor, startTimestamp;
 
@@ -406,25 +420,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentValue = BUDGET * growthRatio;
                 const projectedValue = currentValue * fiveYearGrowthFactor;
 
-                // Optimization: Use cached DOM elements
-                const el = inv.el || document.getElementById(inv.id);
                 if (el) {
                     el.innerText = formatCurrency(projectedValue);
                     el.title = `Based on growth from ${new Date(startTimestamp * 1000).toLocaleDateString()}`;
                 }
 
-                const currEl = inv.currEl || document.getElementById(inv.currId);
                 updateValueWithDiff(currEl, currentValue, BUDGET);
 
             } catch (e) {
                 console.error(`Failed to update ${inv.ticker}:`, e);
-                // Optimization: Use cached DOM elements
-                const el = inv.el || document.getElementById(inv.id);
                 if (el) {
                     el.innerText = 'Error';
                     el.title = e.message;
                 }
-                const currEl = inv.currEl || document.getElementById(inv.currId);
                 if (currEl) {
                     currEl.innerText = 'Error';
                 }
