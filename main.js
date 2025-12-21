@@ -303,13 +303,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mainVal = formatCurrency(isaCurrentValue);
                 isaCurrEl.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
 
-                isaCurrEl.classList.remove('text-white');
-                isaCurrEl.classList.remove('text-green-400', 'text-red-400');
-                if (diff >= 0) {
-                     isaCurrEl.classList.add('text-green-400');
-                } else {
-                     isaCurrEl.classList.add('text-red-400');
-                }
+                isaCurrEl.classList.remove('text-white', 'text-green-400', 'text-red-400');
+                isaCurrEl.classList.add(diffClass);
             }
             const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
