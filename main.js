@@ -277,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Optimization: Cache DOM elements after insertion to avoid getElementById in loops
         investments.forEach(inv => {
-            elementCache.set(inv.id, document.getElementById(inv.id));
-            elementCache.set(inv.currId, document.getElementById(inv.currId));
+            getCachedElement(inv.id);
+            getCachedElement(inv.currId);
         });
     }
 
