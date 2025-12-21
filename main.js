@@ -225,6 +225,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const investmentContainer = document.getElementById('investment-container');
     const elementCache = new Map();
 
+    const getCachedElement = (id) => {
+        if (elementCache.has(id)) {
+            return elementCache.get(id);
+        }
+        const el = document.getElementById(id);
+        elementCache.set(id, el);
+        return el;
+    };
+
     if (investmentContainer) {
         // Optimization: Batch HTML insertion to reduce DOM thrashing
         const allCardsHTML = investments.map(inv => {
@@ -313,15 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const isaProjEl = document.getElementById('val-isa');
 
     const fetchInvestmentData = async () => {
-        const getCachedElement = (id) => {
-            if (elementCache.has(id)) {
-                return elementCache.get(id);
-            }
-            const el = document.getElementById(id);
-            elementCache.set(id, el);
-            return el;
-        };
-
         const now = new Date().getTime() / 1000;
 
         // Calculate Cash ISA
