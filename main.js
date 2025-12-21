@@ -47,17 +47,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Format Helper ---
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-GB', {
+            style: 'currency',
+            currency: 'GBP',
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
     // --- Budget Logic ---
     let BUDGET = 4500;
     const budgetWrapper = document.getElementById('budget-wrapper');
     const budgetDisplay = document.getElementById('budget-display');
     const budgetInput = document.getElementById('budget-input');
+    const introBudgetAmount = document.getElementById('intro-budget-amount');
 
     const updateBudget = () => {
         const val = parseFloat(budgetInput.value);
         if (!isNaN(val) && val > 0) {
             BUDGET = val;
-            budgetDisplay.innerText = '£' + BUDGET.toLocaleString();
+            const formatted = formatCurrency(BUDGET);
+            budgetDisplay.innerText = formatted;
+            if (introBudgetAmount) {
+                introBudgetAmount.innerText = formatted;
+            }
             fetchInvestmentData(); // Recalculate
         }
         budgetInput.classList.add('hidden');
@@ -153,7 +167,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Conservative',
             icon: 'trending_up',
             colorKey: 'green',
-            // Stepped line for conservative/ETF feel
             sparklinePath: 'M0,20 L20,20 L20,15 L40,15 L40,10 L60,10 L60,5 L80,5 L80,0 L100,0'
         },
         {
@@ -164,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Aggressive',
             icon: 'rocket_launch',
             colorKey: 'primary',
-            // Volatile curve
             sparklinePath: 'M0,25 C10,25 20,20 30,22 C40,24 50,15 60,15 C70,15 80,5 100,0'
         },
         {
@@ -175,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Steady',
             icon: 'currency_pound',
             colorKey: 'blue',
-            // More jagged but generally upward
             sparklinePath: 'M0,22 L15,20 L30,21 L45,18 L60,19 L75,15 L90,12 L100,10'
         },
         {
@@ -186,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Growth',
             icon: 'query_stats',
             colorKey: 'purple',
-            // Smooth growth curve
             sparklinePath: 'M0,25 Q25,24 50,15 T100,0'
         },
         {
@@ -197,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'Aggressive',
             icon: 'shopping_cart',
             colorKey: 'orange',
-            // Dip then rise
             sparklinePath: 'M0,15 C20,20 40,25 60,15 S80,5 100,0'
         },
         {
@@ -208,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             type: 'For a laugh',
             icon: 'campaign',
             colorKey: 'pink',
-            // Erratic
             sparklinePath: 'M0,10 L20,20 L40,5 L60,15 L80,10 L100,20'
         }
     ];
@@ -287,12 +295,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const isaCurrEl = document.getElementById('curr-val-isa');
             if (isaCurrEl) {
-                isaCurrEl.innerText = '£' + Math.floor(isaCurrentValue).toLocaleString();
+                isaCurrEl.innerText = formatCurrency(isaCurrentValue);
                 isaCurrEl.classList.toggle('text-green-400', isaCurrentValue >= BUDGET);
             }
             const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
-                isaProjEl.innerText = '£' + Math.floor(isaProjectedValue).toLocaleString();
+                isaProjEl.innerText = formatCurrency(isaProjectedValue);
             }
         } catch (e) {
             console.error("ISA Calc Error", e);
@@ -300,6 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const promises = investments.map(async (inv) => {
             try {
+                // Note: Using a public proxy service (corsproxy.io) has security and reliability risks.
+                // A production app should fetch this data via a secure backend service.
                 const url = `https://corsproxy.io/?url=https://query1.finance.yahoo.com/v8/finance/chart/${inv.ticker}?interval=1d&range=5y`;
 
                 const response = await fetch(url);
@@ -316,13 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                let currentPrice = null;
-                for(let i = quotes.length - 1; i >= 0; i--) {
-                    if (quotes[i] !== null && quotes[i] !== undefined) {
-                        currentPrice = quotes[i];
-                        break;
-                    }
-                }
+                // Refactored using findLast (or reverse find) pattern
+                // Since toReversed/findLast might not be in all environments, we use slice().reverse().find()
+                const currentPrice = quotes.slice().reverse().find(p => p !== null && p !== undefined);
 
                 if (!currentPrice) return;
 
@@ -343,12 +349,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Calculate 5-Year Projection using Historical CAGR
                 let firstPrice = null;
                 let firstTs = null;
-                for (let i = 0; i < quotes.length; i++) {
-                    if (quotes[i] !== null && quotes[i] !== undefined) {
-                        firstPrice = quotes[i];
-                        firstTs = timestamps[i];
-                        break;
-                    }
+
+                // Refactored using findIndex for first valid
+                const firstValidIndex = quotes.findIndex(p => p !== null && p !== undefined);
+
+                if (firstValidIndex !== -1) {
+                    firstPrice = quotes[firstValidIndex];
+                    firstTs = timestamps[firstValidIndex];
                 }
 
                 if (firstPrice && firstTs) {
@@ -364,13 +371,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const el = document.getElementById(inv.id);
                 if (el) {
-                    el.innerText = '£' + Math.floor(projectedValue).toLocaleString();
+                    el.innerText = formatCurrency(projectedValue);
                     el.title = `Based on growth from ${new Date(timestamps[startIndex] * 1000).toLocaleDateString()}`;
                 }
 
                 const currEl = document.getElementById(inv.currId);
                 if (currEl) {
-                    currEl.innerText = '£' + Math.floor(currentValue).toLocaleString();
+                    currEl.innerText = formatCurrency(currentValue);
                     currEl.classList.remove('text-white');
                     currEl.classList.toggle('text-green-400', currentValue >= BUDGET);
                     currEl.classList.toggle('text-red-400', currentValue < BUDGET);
@@ -378,6 +385,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } catch (e) {
                 console.error(`Failed to update ${inv.ticker}:`, e);
+                const el = document.getElementById(inv.id);
+                if (el) {
+                    el.innerText = 'Error';
+                    el.title = e.message;
+                }
+                const currEl = document.getElementById(inv.currId);
+                if (currEl) {
+                    currEl.innerText = 'Error';
+                }
             }
         });
 
