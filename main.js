@@ -296,11 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         element.innerHTML = `${mainVal} <span class="${diffClass} text-xs">(${sign}${diffFormatted})</span>`;
 
         element.classList.remove('text-white', 'text-green-400', 'text-red-400');
-        if (diff >= 0) {
-            element.classList.add('text-green-400');
-        } else {
-            element.classList.add('text-red-400');
-        }
+        element.classList.add(diffClass);
     };
 
     const fetchInvestmentData = async () => {
