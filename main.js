@@ -225,10 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const investmentContainer = document.getElementById('investment-container');
 
     if (investmentContainer) {
-        investments.forEach(inv => {
+        // Optimization: Batch HTML insertion to reduce DOM thrashing
+        const allCardsHTML = investments.map(inv => {
             const colors = colorStyles[inv.colorKey] || colorStyles.green;
 
-            const cardHTML = `
+            return `
             <div class="bg-[#1e1e1e] dark:bg-black p-5 rounded-[2rem] text-white relative overflow-hidden">
                 <div class="absolute top-0 right-0 w-32 h-32 ${colors.blur} rounded-full blur-2xl -mr-10 -mt-10"></div>
                 <div class="flex justify-between items-start mb-4 relative z-10">
@@ -261,7 +262,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
             `;
-            investmentContainer.insertAdjacentHTML('beforeend', cardHTML);
+        }).join('');
+        investmentContainer.insertAdjacentHTML('beforeend', allCardsHTML);
+
+        // Optimization: Cache DOM elements after insertion to avoid getElementById in loops
+        investments.forEach(inv => {
+            inv.el = document.getElementById(inv.id);
+            inv.currEl = document.getElementById(inv.currId);
         });
     }
 
@@ -300,6 +307,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const investmentCache = {};
+    // Optimization: Cache static DOM elements
+    const isaCurrEl = document.getElementById('curr-val-isa');
+    const isaProjEl = document.getElementById('val-isa');
 
     const fetchInvestmentData = async () => {
         const now = new Date().getTime() / 1000;
@@ -311,10 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const isaCurrentValue = BUDGET * Math.pow(1 + ISA_RATE, yearsDiff);
             const isaProjectedValue = isaCurrentValue * Math.pow(1 + ISA_RATE, 5);
 
-            const isaCurrEl = document.getElementById('curr-val-isa');
             updateValueWithDiff(isaCurrEl, isaCurrentValue, BUDGET);
 
-            const isaProjEl = document.getElementById('val-isa');
             if (isaProjEl) {
                 isaProjEl.innerText = formatCurrency(isaProjectedValue);
             }
@@ -398,23 +406,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const currentValue = BUDGET * growthRatio;
                 const projectedValue = currentValue * fiveYearGrowthFactor;
 
-                const el = document.getElementById(inv.id);
+                // Optimization: Use cached DOM elements
+                const el = inv.el || document.getElementById(inv.id);
                 if (el) {
                     el.innerText = formatCurrency(projectedValue);
                     el.title = `Based on growth from ${new Date(startTimestamp * 1000).toLocaleDateString()}`;
                 }
 
-                const currEl = document.getElementById(inv.currId);
+                const currEl = inv.currEl || document.getElementById(inv.currId);
                 updateValueWithDiff(currEl, currentValue, BUDGET);
 
             } catch (e) {
                 console.error(`Failed to update ${inv.ticker}:`, e);
-                const el = document.getElementById(inv.id);
+                // Optimization: Use cached DOM elements
+                const el = inv.el || document.getElementById(inv.id);
                 if (el) {
                     el.innerText = 'Error';
                     el.title = e.message;
                 }
-                const currEl = document.getElementById(inv.currId);
+                const currEl = inv.currEl || document.getElementById(inv.currId);
                 if (currEl) {
                     currEl.innerText = 'Error';
                 }
