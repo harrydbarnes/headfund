@@ -1,7 +1,7 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const baseURL = `http://localhost:${PORT}`;
 
 module.exports = defineConfig({
