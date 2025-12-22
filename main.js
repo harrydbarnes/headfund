@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currId: 'curr-val-vanguard',
             ticker: 'VWRL.L',
             name: 'Vanguard Global',
-            type: 'Conservative',
+            type: 'Smart',
             icon: 'trending_up',
             colorKey: 'green',
             sparklinePath: 'M0,20 L20,20 L20,15 L40,15 L40,10 L60,10 L60,5 L80,5 L80,0 L100,0'
@@ -178,26 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: 'rocket_launch',
             colorKey: 'primary',
             sparklinePath: 'M0,25 C10,25 20,20 30,22 C40,24 50,15 60,15 C70,15 80,5 100,0'
-        },
-        {
-            id: 'val-ftse',
-            currId: 'curr-val-ftse',
-            ticker: '%5EFTSE',
-            name: 'FTSE 100',
-            type: 'Steady',
-            icon: 'currency_pound',
-            colorKey: 'blue',
-            sparklinePath: 'M0,22 L15,20 L30,21 L45,18 L60,19 L75,15 L90,12 L100,10'
-        },
-        {
-            id: 'val-sp500',
-            currId: 'curr-val-sp500',
-            ticker: '%5EGSPC',
-            name: 'S&P 500',
-            type: 'Growth',
-            icon: 'query_stats',
-            colorKey: 'purple',
-            sparklinePath: 'M0,25 Q25,24 50,15 T100,0'
         },
         {
             id: 'val-amazon',
@@ -218,6 +198,26 @@ document.addEventListener('DOMContentLoaded', () => {
             icon: 'campaign',
             colorKey: 'pink',
             sparklinePath: 'M0,10 L20,20 L40,5 L60,15 L80,10 L100,20'
+        },
+        {
+            id: 'val-ftse',
+            currId: 'curr-val-ftse',
+            ticker: '%5EFTSE',
+            name: 'FTSE 100',
+            type: 'Steady',
+            icon: 'currency_pound',
+            colorKey: 'blue',
+            sparklinePath: 'M0,22 L15,20 L30,21 L45,18 L60,19 L75,15 L90,12 L100,10'
+        },
+        {
+            id: 'val-sp500',
+            currId: 'curr-val-sp500',
+            ticker: '%5EGSPC',
+            name: 'S&P 500',
+            type: 'Growth',
+            icon: 'query_stats',
+            colorKey: 'purple',
+            sparklinePath: 'M0,25 Q25,24 50,15 T100,0'
         }
     ];
 
