@@ -313,13 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         element.innerHTML = `${mainVal} <span class="text-xs">(${sign}${diffFormatted})</span>`;
 
         // Remove potential color classes (including passed default)
-        const possibleColors = ['text-white', 'text-green-400', 'text-red-400', 'text-primary', 'text-blue-400', 'text-purple-400', 'text-orange-400', 'text-pink-400'];
+        const possibleColors = ['text-white', 'text-green-400', 'text-red-400', 'text-primary', 'text-blue-400', 'text-purple-400', 'text-orange-400', 'text-pink-400', 'text-yellow-400'];
         element.classList.remove(...possibleColors);
-
-        // If there was a specific default color class (like in cards), remove it too if it's not in the list above
-        if (defaultColorClass && !possibleColors.includes(defaultColorClass)) {
-             element.classList.remove(defaultColorClass);
-        }
 
         element.classList.add(diffClass);
     };
