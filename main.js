@@ -367,10 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const currEl = getCachedElement(inv.currId);
 
             try {
-                let growthRatio, fiveYearGrowthFactor, startTimestamp;
+                let growthRatio, annualGrowthRate, startTimestamp;
 
                 if (investmentCache[inv.ticker]) {
-                    ({ growthRatio, fiveYearGrowthFactor, startTimestamp } = investmentCache[inv.ticker]);
+                    ({ growthRatio, annualGrowthRate = 1, startTimestamp } = investmentCache[inv.ticker]);
                 } else {
                     // Note: Using a public proxy service (corsproxy.io) has security and reliability risks.
                     // A production app should fetch this data via a secure backend service.
@@ -407,8 +407,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     growthRatio = currentPrice / startPrice;
 
-                    // Calculate 5-Year Projection using Historical CAGR
-                    fiveYearGrowthFactor = 1;
+                    // Calculate Annual Growth Rate
+                    annualGrowthRate = 1;
 
                     let firstPrice = null;
                     let firstTs = null;
@@ -427,31 +427,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         if (dataYears > 0.5) {
                             const historicalGrowth = currentPrice / firstPrice;
-                            const annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
-
-                            // Adjust growth factor based on start date logic
-                            // If before target (yearsDiff < 0), we only grow for (5 + yearsDiff) years
-                            const projectionYears = yearsDiff < 0 ? (5 + yearsDiff) : 5;
-                            // Ensure we don't project negative time
-                            const effectiveYears = Math.max(0, projectionYears);
-
-                            fiveYearGrowthFactor = Math.pow(annualGrowthRate, effectiveYears);
+                            annualGrowthRate = Math.pow(historicalGrowth, 1 / dataYears);
                         }
                     }
 
                     startTimestamp = timestamps[startIndex];
 
-                    // Cache the calculated factors
-                    // Note: fiveYearGrowthFactor now depends on yearsDiff, so strictly caching it might be slightly off
-                    // if the session crosses a significant time boundary, but practically negligible.
-                    // However, since yearsDiff changes every second (slightly), caching might be an issue if we needed high precision.
-                    // Given the app nature, caching per session load or short term is fine.
-                    // BUT, since we changed the logic to depend on `yearsDiff` (global), and `investmentCache` stores it...
-                    // if we re-fetch, it uses the cached factor.
-                    // Ideally, we should cache `annualGrowthRate` and recalculate `fiveYearGrowthFactor`.
-                    // For now, assuming page reload clears cache, it's fine.
-                    investmentCache[inv.ticker] = { growthRatio, fiveYearGrowthFactor, startTimestamp };
+                    // Cache the stable, calculated values
+                    investmentCache[inv.ticker] = { growthRatio, annualGrowthRate, startTimestamp };
                 }
+
+                // Always calculate the dynamic fiveYearGrowthFactor
+                const projectionYears = yearsDiff < 0 ? (5 + yearsDiff) : 5;
+                const effectiveYears = Math.max(0, projectionYears);
+                const fiveYearGrowthFactor = Math.pow(annualGrowthRate, effectiveYears);
 
                 const currentValue = BUDGET * growthRatio;
                 const projectedValue = currentValue * fiveYearGrowthFactor;
