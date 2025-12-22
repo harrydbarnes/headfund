@@ -1,6 +1,9 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
+const PORT = 8080;
+const baseURL = `http://localhost:${PORT}`;
+
 module.exports = defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -9,7 +12,7 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:8080',
+    baseURL,
     trace: 'on-first-retry',
   },
   projects: [
@@ -19,8 +22,8 @@ module.exports = defineConfig({
     },
   ],
   webServer: {
-    command: 'npx http-server -p 8080 --silent',
-    url: 'http://localhost:8080',
+    command: `npx http-server -p ${PORT} --silent`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
   },
 });
