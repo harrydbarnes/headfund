@@ -34,6 +34,7 @@ def verify_investments():
 
         except Exception as e:
             print(f"Error: {e}")
+            raise
         finally:
             browser.close()
 
