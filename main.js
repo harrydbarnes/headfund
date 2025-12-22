@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let growthRatio, annualGrowthRate, startTimestamp;
 
                 if (investmentCache[inv.ticker]) {
-                    ({ growthRatio, annualGrowthRate, startTimestamp } = investmentCache[inv.ticker]);
+                    ({ growthRatio, annualGrowthRate = 1, startTimestamp } = investmentCache[inv.ticker]);
                 } else {
                     // Note: Using a public proxy service (corsproxy.io) has security and reliability risks.
                     // A production app should fetch this data via a secure backend service.
