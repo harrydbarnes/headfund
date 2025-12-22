@@ -24,6 +24,6 @@ for (const investment of dynamicInvestments) {
     test(`Dynamic investment for ${investment.name} loads correctly`, async ({ page }) => {
         const element = page.locator(`#${investment.id}`);
         await expect(element).toBeVisible();
-        await expect(element).toContainText(/£\d/);
+        await expect(element).toContainText(/£[\d,]+/);
     });
 }
