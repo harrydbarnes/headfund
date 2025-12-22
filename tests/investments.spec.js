@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 
 test('Cash ISA investment loads correctly', async ({ page }) => {
   const isaElement = page.locator('#val-isa');
-  await expect(isaElement).toContainText(/£\d/);
+  await expect(isaElement).toContainText(/£[\d,]+/);
 });
 
 for (const investment of dynamicInvestments) {
